@@ -3,7 +3,6 @@ package com.medapp.service;
 import com.medapp.dto.MedicineDto;
 import com.medapp.dto.MedicineWithStockDto;
 import com.medapp.entity.Medicine;
-import com.medapp.entity.MedStock;
 import com.medapp.repository.MedicineRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
