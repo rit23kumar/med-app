@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/medicines")
@@ -19,6 +20,11 @@ public class MedicineController {
     @PostMapping
     public ResponseEntity<MedicineDto> addMedicine(@RequestBody MedicineDto medicineDto) {
         return ResponseEntity.ok(medicineService.addMedicine(medicineDto));
+    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<List<MedicineDto>> addMedicines(@RequestBody List<MedicineDto> medicines) {
+        return ResponseEntity.ok(medicineService.addMedicines(medicines));
     }
 
     @PostMapping("/with-stock")
@@ -41,5 +47,13 @@ public class MedicineController {
             return ResponseEntity.ok(medicine);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Medicine>> searchMedicines(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "contains") String searchType) {
+        List<Medicine> medicines = medicineService.searchMedicinesByName(name, searchType);
+        return ResponseEntity.ok(medicines);
     }
 } 

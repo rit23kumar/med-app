@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,6 +29,13 @@ public class MedicineService {
         medicine = medicineRepository.save(medicine);
         BeanUtils.copyProperties(medicine, medicineDto);
         return medicineDto;
+    }
+
+    @Transactional
+    public List<MedicineDto> addMedicines(List<MedicineDto> medicineDtos) {
+        return medicineDtos.stream()
+            .map(this::addMedicine)
+            .toList();
     }
 
     @Transactional
@@ -55,5 +63,12 @@ public class MedicineService {
             return dto;
         }
         return null;
+    }
+
+    public List<Medicine> searchMedicinesByName(String name, String searchType) {
+        if ("startsWith".equals(searchType)) {
+            return medicineRepository.findByNameStartsWithIgnoreCase(name);
+        }
+        return medicineRepository.findByNameContainingIgnoreCase(name);
     }
 } 
