@@ -9,6 +9,7 @@ com\medapp\dto\MedicineWithStockDto$StockDto.class
 com\medapp\controller\TestController.class
 com\medapp\config\CorsConfig.class
 com\medapp\config\SecurityConfig.class
+com\medapp\controller\SaleController.class
 com\medapp\dto\CreateSaleRequest$SaleItemRequest.class
 com\medapp\entity\MedStock.class
 com\medapp\entity\Sale.class

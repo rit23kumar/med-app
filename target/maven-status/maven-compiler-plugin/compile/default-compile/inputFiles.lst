@@ -1,5 +1,6 @@
 E:\work\GIT\Med-App\med-app\src\main\java\com\medapp\config\SecurityConfig.java
 E:\work\GIT\Med-App\med-app\src\main\java\com\medapp\entity\Sale.java
+E:\work\GIT\Med-App\med-app\src\main\java\com\medapp\dto\BatchMedicineResponse.java
 E:\work\GIT\Med-App\med-app\src\main\java\com\medapp\repository\SaleRepository.java
 E:\work\GIT\Med-App\med-app\src\main\java\com\medapp\service\MedicineService.java
 E:\work\GIT\Med-App\med-app\src\main\java\com\medapp\dto\MedicineWithStockDto.java

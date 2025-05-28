@@ -2,6 +2,7 @@ package com.medapp.controller;
 
 import com.medapp.dto.MedicineDto;
 import com.medapp.dto.MedicineWithStockDto;
+import com.medapp.dto.BatchMedicineResponse;
 import com.medapp.entity.Medicine;
 import com.medapp.service.MedicineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class MedicineController {
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<List<MedicineDto>> addMedicines(@RequestBody List<MedicineDto> medicines) {
+    public ResponseEntity<BatchMedicineResponse> addMedicines(@RequestBody List<MedicineDto> medicines) {
         return ResponseEntity.ok(medicineService.addMedicines(medicines));
     }
 
