@@ -36,7 +36,7 @@ public class SellService {
     public Sell createSell(CreateSellRequest request) {
         Sell sell = new Sell();
         sell.setDate(LocalDateTime.now());
-        sell.setCustomer(request.getCustomer());
+        sell.setCustomer(request.getCustomer() == null || request.getCustomer().trim().isEmpty() ? "ANONYMOUS" : request.getCustomer());
         
         List<SellItem> items = new ArrayList<>();
         double totalAmount = 0.0;
