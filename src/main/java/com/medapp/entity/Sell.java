@@ -4,24 +4,28 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "Sale")
+@Table(name = "Sell")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Sale {
+public class Sell {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    private LocalDate date;
+    private LocalDateTime date;
     
     @Column(name = "Total_Amount")
     private Double totalAmount;
     
     @Column(nullable = true)
     private String customer;
+
+    @OneToMany(mappedBy = "sell", cascade = CascadeType.ALL)
+    private List<SellItem> items;
 } 

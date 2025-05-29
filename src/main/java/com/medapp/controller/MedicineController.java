@@ -3,8 +3,10 @@ package com.medapp.controller;
 import com.medapp.dto.MedicineDto;
 import com.medapp.dto.MedicineWithStockDto;
 import com.medapp.dto.BatchMedicineResponse;
+import com.medapp.dto.StockHistoryResponse;
 import com.medapp.entity.Medicine;
 import com.medapp.service.MedicineService;
+import com.medapp.service.MedStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,9 @@ public class MedicineController {
 
     @Autowired
     private MedicineService medicineService;
+
+    @Autowired
+    private MedStockService medStockService;
 
     @PostMapping
     public ResponseEntity<MedicineDto> addMedicine(@RequestBody MedicineDto medicineDto) {
@@ -56,5 +61,12 @@ public class MedicineController {
             @RequestParam(defaultValue = "contains") String searchType) {
         List<Medicine> medicines = medicineService.searchMedicinesByName(name, searchType);
         return ResponseEntity.ok(medicines);
+    }
+
+    @GetMapping("/{id}/stock-history")
+    public ResponseEntity<List<StockHistoryResponse>> getMedicineStockHistory(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean includeFinished) {
+        return ResponseEntity.ok(medStockService.getMedicineStockHistory(id, includeFinished));
     }
 } 

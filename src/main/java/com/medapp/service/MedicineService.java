@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -85,14 +86,21 @@ public class MedicineService {
 
     @Transactional
     public MedicineWithStockDto addMedicineWithStock(MedicineWithStockDto dto) {
-        // First save the medicine
-        MedicineDto savedMedicine = addMedicine(dto.getMedicine());
+        Medicine medicine;
+        if (dto.getMedicine().getId() != null) {
+            // If medicine ID exists, this is an update to existing medicine's stock
+            medicine = medicineRepository.findById(dto.getMedicine().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Medicine not found with id: " + dto.getMedicine().getId()));
+        } else {
+            // If no medicine ID, this is a new medicine with stock
+            MedicineDto savedMedicine = addMedicine(dto.getMedicine());
+            medicine = new Medicine();
+            BeanUtils.copyProperties(savedMedicine, medicine);
+        }
         
-        // Then add the stock
-        medStockService.addStock(savedMedicine.getId(), dto.getStock());
+        // Add or update the stock
+        medStockService.addStock(medicine.getId(), dto.getStock());
         
-        // Update the DTO with saved data
-        dto.getMedicine().setId(savedMedicine.getId());
         return dto;
     }
 

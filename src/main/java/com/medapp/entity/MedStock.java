@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "Med_Stock")
@@ -25,5 +27,13 @@ public class MedStock {
     private LocalDate expDate;
     
     private Integer quantity;
+    
+    @Column(name = "Available_Quantity")
+    private Integer availableQuantity;
+    
     private Double price;
+
+    @CreationTimestamp
+    @Column(name = "Created_At", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 } 

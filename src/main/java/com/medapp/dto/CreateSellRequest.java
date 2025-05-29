@@ -4,12 +4,12 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class CreateSaleRequest {
+public class CreateSellRequest {
     private String customer;
-    private List<SaleItemRequest> items;
+    private List<SellItemRequest> items;
 
     @Data
-    public static class SaleItemRequest {
+    public static class SellItemRequest {
         private Long medicineId;
         private Integer quantity;
         private Double price;

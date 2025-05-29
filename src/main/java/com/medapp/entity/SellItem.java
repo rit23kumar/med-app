@@ -7,19 +7,19 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "Sale_Item")
+@Table(name = "Sell_Item")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SaleItem {
+public class SellItem {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "Sale_ID", nullable = false)
-    private Sale sale;
+    @JoinColumn(name = "Sell_ID", nullable = false)
+    private Sell sell;
     
     @ManyToOne
     @JoinColumn(name = "Med_ID", nullable = false)
