@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDate;
 
 @Entity
@@ -19,6 +20,7 @@ public class SellItem {
     
     @ManyToOne
     @JoinColumn(name = "Sell_ID", nullable = false)
+    @JsonIgnore
     private Sell sell;
     
     @ManyToOne
