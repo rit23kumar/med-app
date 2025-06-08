@@ -30,7 +30,7 @@ public class MedicineService {
     public MedicineDto addMedicine(MedicineDto medicineDto) {
         // Check if medicine with same name already exists
         if (medicineRepository.existsByNameIgnoreCase(medicineDto.getName())) {
-            throw new IllegalArgumentException("A medicine with this name already exists");
+            throw new IllegalArgumentException("Medicine '" + medicineDto.getName() + "' already exists");
         }
 
         try {
@@ -56,7 +56,7 @@ public class MedicineService {
                 if (medicineRepository.existsByNameIgnoreCase(medicineDto.getName())) {
                     failedMedicines.add(new BatchMedicineResponse.FailedMedicine(
                         medicineDto.getName(),
-                        "Medicine with this name already exists"
+                        "Medicine '" + medicineDto.getName() + "' already exists"
                     ));
                     continue;
                 }
@@ -68,6 +68,11 @@ public class MedicineService {
                 MedicineDto savedDto = new MedicineDto();
                 BeanUtils.copyProperties(medicine, savedDto);
                 successfulMedicines.add(savedDto);
+            } catch (DataIntegrityViolationException e) {
+                failedMedicines.add(new BatchMedicineResponse.FailedMedicine(
+                    medicineDto.getName(),
+                    "Failed to save medicine: Invalid data provided"
+                ));
             } catch (Exception e) {
                 failedMedicines.add(new BatchMedicineResponse.FailedMedicine(
                     medicineDto.getName(),
@@ -126,6 +131,6 @@ public class MedicineService {
     }
 
     public List<Medicine> getAllMedicinesUnpaged() {
-        return medicineRepository.findAll();
+        return medicineRepository.findAll(org.springframework.data.domain.Sort.by("name").ascending());
     }
 } 
