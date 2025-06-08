@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Sort;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,11 +37,9 @@ public class MedStockService {
         stock.setQuantity(stockDto.getQuantity());
         stock.setAvailableQuantity(stockDto.getAvailableQuantity() != null ? stockDto.getAvailableQuantity() : stockDto.getQuantity());
         stock.setPrice(stockDto.getPrice());
+        stock.setCreatedAt(LocalDateTime.now());
 
-        stock = medStockRepository.save(stock);
-        
-        // Copy back the creation date to the DTO
-        stockDto.setCreatedAt(stock.getCreatedAt());
+        stock = medStockRepository.save(stock);        
         
         return stock;
     }

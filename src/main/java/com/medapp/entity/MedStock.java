@@ -33,7 +33,6 @@ public class MedStock {
     
     private Double price;
 
-    @CreationTimestamp
     @Column(name = "Created_At", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 } 
