@@ -37,6 +37,7 @@ public class SellService {
         Sell sell = new Sell();
         sell.setDate(LocalDateTime.now());
         sell.setCustomer(request.getCustomer() == null || request.getCustomer().trim().isEmpty() ? "ANONYMOUS" : request.getCustomer());
+        sell.setModeOfPayment(request.getModeOfPayment());
         
         List<SellItem> items = new ArrayList<>();
         double totalAmount = 0.0;
@@ -72,6 +73,7 @@ public class SellService {
             item.setQuantity(itemRequest.getQuantity());
             item.setPrice(itemRequest.getPrice());
             item.setExpDate(LocalDate.parse(itemRequest.getExpDate()));
+            item.setDiscount(itemRequest.getDiscount());
             
             items.add(item);
             totalAmount += itemRequest.getPrice() * itemRequest.getQuantity();

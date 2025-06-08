@@ -7,6 +7,7 @@ import java.util.List;
 public class CreateSellRequest {
     private String customer;
     private List<SellItemRequest> items;
+    private String modeOfPayment;
 
     @Data
     public static class SellItemRequest {
@@ -14,5 +15,6 @@ public class CreateSellRequest {
         private Integer quantity;
         private Double price;
         private String expDate;
+        private Double discount;
     }
 } 

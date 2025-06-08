@@ -32,4 +32,7 @@ public class SellItem {
     
     private Integer quantity;
     private Double price;
+    
+    @Column(name = "discount")
+    private Double discount;
 } 
