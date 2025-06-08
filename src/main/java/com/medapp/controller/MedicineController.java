@@ -69,4 +69,9 @@ public class MedicineController {
             @RequestParam(defaultValue = "false") boolean includeFinished) {
         return ResponseEntity.ok(medStockService.getMedicineStockHistory(id, includeFinished));
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Medicine>> getAllMedicinesUnpaged() {
+        return ResponseEntity.ok(medicineService.getAllMedicinesUnpaged());
+    }
 } 

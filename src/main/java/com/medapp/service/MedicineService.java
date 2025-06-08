@@ -124,4 +124,8 @@ public class MedicineService {
         }
         return medicineRepository.findByNameContainingIgnoreCase(name);
     }
+
+    public List<Medicine> getAllMedicinesUnpaged() {
+        return medicineRepository.findAll();
+    }
 } 
