@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "Med_Stock")
