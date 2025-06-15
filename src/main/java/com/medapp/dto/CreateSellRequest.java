@@ -16,5 +16,6 @@ public class CreateSellRequest {
         private Double price;
         private String expDate;
         private Double discount;
+        private Long batchId;
     }
 } 

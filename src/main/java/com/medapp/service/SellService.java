@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class SellService {
@@ -44,23 +45,22 @@ public class SellService {
 
         for (SellItemRequest itemRequest : request.getItems()) {
             Medicine medicine = medicineRepository.findById(itemRequest.getMedicineId())
-                .orElseThrow(() -> new RuntimeException("Medicine not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Medicine not found with id: " + itemRequest.getMedicineId()));
 
-            // Find the stock entry with matching expiry date
-            List<MedStock> stockEntries = medStockRepository.findByMedicineIdAndExpDate(
-                medicine.getId(), 
-                LocalDate.parse(itemRequest.getExpDate())
-            );
-            
-            if (stockEntries.isEmpty()) {
-                throw new RuntimeException("No stock found for medicine with given expiry date");
+            MedStock stockEntry = medStockRepository.findById(itemRequest.getBatchId())
+                .orElseThrow(() -> new EntityNotFoundException("Stock batch not found with id: " + itemRequest.getBatchId()));
+
+            // Validate that the medicine and expiry date of the stock entry match the request
+            if (!stockEntry.getMedicine().getId().equals(itemRequest.getMedicineId())) {
+                throw new IllegalArgumentException("Batch ID " + itemRequest.getBatchId() + " does not belong to medicine ID " + itemRequest.getMedicineId());
             }
-            
-            MedStock stockEntry = stockEntries.get(0);
+            if (!stockEntry.getExpDate().isEqual(LocalDate.parse(itemRequest.getExpDate()))) {
+                throw new IllegalArgumentException("Expiry date mismatch for batch ID " + itemRequest.getBatchId());
+            }
             
             // Check if enough quantity is available
             if (stockEntry.getAvailableQuantity() < itemRequest.getQuantity()) {
-                throw new RuntimeException("Insufficient stock available");
+                throw new IllegalArgumentException("Insufficient stock available for batch ID " + itemRequest.getBatchId() + ". Available: " + stockEntry.getAvailableQuantity() + ", Requested: " + itemRequest.getQuantity());
             }
             
             // Update available quantity
