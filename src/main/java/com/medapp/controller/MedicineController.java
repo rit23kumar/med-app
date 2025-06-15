@@ -77,6 +77,12 @@ public class MedicineController {
         return ResponseEntity.ok(medicineService.getAllMedicinesUnpaged());
     }
 
+    @DeleteMapping("/stock/{id}")
+    public ResponseEntity<Void> deleteStockBatch(@PathVariable Long id) {
+        medStockService.deleteStockBatch(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);

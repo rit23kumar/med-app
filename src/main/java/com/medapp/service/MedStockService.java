@@ -74,4 +74,12 @@ public class MedStockService {
             })
             .collect(Collectors.toList());
     }
+
+    @Transactional
+    public void deleteStockBatch(Long id) {
+        if (!medStockRepository.existsById(id)) {
+            throw new EntityNotFoundException("Stock batch not found with id: " + id);
+        }
+        medStockRepository.deleteById(id);
+    }
 } 
