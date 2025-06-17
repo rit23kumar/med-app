@@ -11,6 +11,7 @@ import com.medapp.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,16 @@ public class AuthController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ErrorResponse("Invalid username or password", "INVALID_CREDENTIALS"));
+        }
+    }
+
+    @GetMapping("/current-user")
+    public ResponseEntity<LoginResponse> getCurrentUser(Authentication authentication) {
+        try {
+            LoginResponse response = authService.getCurrentUser(authentication);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 

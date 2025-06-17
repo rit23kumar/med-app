@@ -8,31 +8,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    private Key signInKey;
-
-    // Token expiration times in milliseconds
-    private static final long ADMIN_TOKEN_EXPIRATION = 1000L * 60 * 5;    // 5 minutes
-    private static final long USER_TOKEN_EXPIRATION = 1000L * 60 * 2 + 1000L * 30;   // 2.5 minutes
-
-    @PostConstruct
-    public void init() {
-        this.signInKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secret));
-    }
+    private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+    private static final long ADMIN_TOKEN_EXPIRATION = 12 * 60 * 60 * 1000; // 12 hours
+    private static final long USER_TOKEN_EXPIRATION = 8 * 60 * 60 * 1000; // 8 hours
+    private static final long IDLE_TIMEOUT = 2 * 60 * 1000; // 2 minutes
+    private static final long IDLE_WARNING_TIME = 30 * 1000; // 30 seconds
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -43,23 +32,30 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(String username, Set<String> roles) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", roles);
-        return createToken(claims, username, roles);
+        String role = userDetails.getAuthorities().stream()
+                .filter(a -> a.getAuthority().startsWith("ROLE_"))
+                .map(a -> a.getAuthority().substring(5))
+                .findFirst()
+                .orElse("USER");
+        claims.put("role", role);
+        return generateToken(claims, userDetails);
     }
 
-    private String createToken(Map<String, Object> claims, String subject, Set<String> roles) {
-        // Determine token expiration based on user role
-        long expirationTime = roles.contains("ADMIN") ? ADMIN_TOKEN_EXPIRATION : USER_TOKEN_EXPIRATION;
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        long expirationTime = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")) 
+                ? ADMIN_TOKEN_EXPIRATION 
+                : USER_TOKEN_EXPIRATION;
         
         return Jwts
                 .builder()
-                .setClaims(claims)
-                .setSubject(subject)
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(signInKey, SignatureAlgorithm.HS256)
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -79,9 +75,40 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
-                .setSigningKey(signInKey)
+                .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private Key getSignInKey() {
+        byte[] keyBytes = SECRET_KEY.getBytes();
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String extendTokenExpiration(String token) {
+        Claims claims = extractAllClaims(token);
+        String username = claims.getSubject();
+        String role = claims.get("role", String.class);
+        
+        if (role == null) {
+            // If role is not in claims, check authorities
+            role = claims.get("authorities", String.class);
+            if (role == null) {
+                // Default to USER if no role is found
+                role = "USER";
+            }
+        }
+        
+        long expirationTime = role.contains("ADMIN") ? ADMIN_TOKEN_EXPIRATION : USER_TOKEN_EXPIRATION;
+        
+        return Jwts
+                .builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 } 

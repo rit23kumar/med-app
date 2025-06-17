@@ -5,18 +5,20 @@ import com.medapp.dto.LoginResponse;
 import com.medapp.dto.UserRegistrationRequest;
 import com.medapp.dto.UserResponseDto;
 import com.medapp.entity.User;
+import com.medapp.entity.UserRole;
 import com.medapp.exception.UserDisabledException;
 import com.medapp.repository.UserRepository;
 import com.medapp.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,29 +42,49 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        // First check if user exists and is active
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!user.isActive()) {
-            throw new UserDisabledException("User is disabled");
-        }
-
-        // Then authenticate
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+            )
         );
 
-        String token = jwtService.generateToken(user.getUsername(), user.getRoles());
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String token = jwtService.generateToken(userDetails);
         
+        User user = userRepository.findByUsername(request.getUsername())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.isEnabled()) {
+            throw new UserDisabledException("This account has been disabled. Please contact your administrator.");
+        }
+
+        return new LoginResponse(
+            token,
+            user.getUsername(),
+            user.getFullName(),
+            user.getRole().name(),
+            user.getId()
+        );
+    }
+
+    public LoginResponse getCurrentUser(Authentication authentication) {
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.isEnabled()) {
+            throw new UserDisabledException("This account has been disabled. Please contact your administrator.");
+        }
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String token = jwtService.generateToken(userDetails);
+
         return new LoginResponse(
                 token,
                 user.getUsername(),
                 user.getFullName(),
-                user.getRoles()
+                user.getRole().name(),
+                user.getId()
         );
     }
 
@@ -75,9 +97,8 @@ public class AuthService {
         newUser.setUsername(request.getUsername());
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setFullName(request.getFullName());
-        // Ensure roles are uppercase for consistency with Spring Security's ROLE_ prefix logic
-        newUser.setRoles(request.getRoles().stream().map(String::toUpperCase).collect(Collectors.toSet()));
-        newUser.setActive(true); // New users are active by default
+        newUser.setRole(UserRole.valueOf(request.getRole().toUpperCase()));
+        newUser.setEnabled(true); // New users are enabled by default
 
         return userRepository.save(newUser);
     }
@@ -89,17 +110,17 @@ public class AuthService {
                     dto.setId(user.getId());
                     dto.setFullName(user.getFullName());
                     dto.setUsername(user.getUsername());
-                    dto.setRoles(user.getRoles());
-                    dto.setActive(user.isActive());
+                    dto.setRole(user.getRole().name());
+                    dto.setEnabled(user.isEnabled());
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
 
-    public User updateUserStatus(Long userId, boolean active) {
+    public User updateUserStatus(Long userId, boolean enabled) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        user.setActive(active);
+        user.setEnabled(enabled);
         return userRepository.save(user);
     }
 
@@ -116,9 +137,8 @@ public class AuthService {
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("Tindal@321"));
             admin.setFullName("Administrator");
-            Set<String> roles = new HashSet<>();
-            roles.add("ADMIN");
-            admin.setRoles(roles);
+            admin.setRole(UserRole.ADMIN);
+            admin.setEnabled(true);
             userRepository.save(admin);
         }
 
@@ -128,9 +148,8 @@ public class AuthService {
             appUser.setUsername("user1");
             appUser.setPassword(passwordEncoder.encode("User1@234")); // Choose a strong password
             appUser.setFullName("App User");
-            Set<String> appRoles = new HashSet<>();
-            appRoles.add("USER");
-            appUser.setRoles(appRoles);
+            appUser.setRole(UserRole.USER);
+            appUser.setEnabled(true);
             userRepository.save(appUser);
         }
     }
@@ -141,9 +160,8 @@ public class AuthService {
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setFullName("Administrator");
-            Set<String> roles = new HashSet<>();
-            roles.add("ADMIN");
-            admin.setRoles(roles);
+            admin.setRole(UserRole.ADMIN);
+            admin.setEnabled(true);
             userRepository.save(admin);
         }
 
@@ -153,9 +171,8 @@ public class AuthService {
             appUser.setUsername("appuser");
             appUser.setPassword(passwordEncoder.encode("appuser123")); // Choose a strong password
             appUser.setFullName("App User");
-            Set<String> appRoles = new HashSet<>();
-            appRoles.add("USER");
-            appUser.setRoles(appRoles);
+            appUser.setRole(UserRole.USER);
+            appUser.setEnabled(true);
             userRepository.save(appUser);
         }
     }
