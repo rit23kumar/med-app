@@ -1,5 +1,6 @@
 package com.medapp.service.impl;
 
+import com.medapp.dto.StockHistoryResponse;
 import com.medapp.entity.MedStock;
 import com.medapp.entity.Sell;
 import com.medapp.repository.MedStockRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class HistoryServiceImpl implements HistoryService {
@@ -29,9 +31,23 @@ public class HistoryServiceImpl implements HistoryService {
     }
 
     @Override
-    public List<MedStock> getPurchaseHistory(LocalDate fromDate, LocalDate toDate) {
+    public List<StockHistoryResponse> getPurchaseHistory(LocalDate fromDate, LocalDate toDate) {
         LocalDateTime startDateTime = fromDate.atStartOfDay();
         LocalDateTime endDateTime = toDate.plusDays(1).atStartOfDay();
-        return medStockRepository.findByCreatedAtBetween(startDateTime, endDateTime);
+        List<MedStock> stocks = medStockRepository.findByCreatedAtBetween(startDateTime, endDateTime);
+        
+        return stocks.stream()
+            .map(stock -> {
+                StockHistoryResponse response = new StockHistoryResponse();
+                response.setId(stock.getId());
+                response.setMedicineName(stock.getMedicine().getName());
+                response.setExpDate(stock.getExpDate());
+                response.setQuantity(stock.getQuantity());
+                response.setAvailableQuantity(stock.getAvailableQuantity());
+                response.setPrice(stock.getPrice());
+                response.setCreatedAt(stock.getCreatedAt());
+                return response;
+            })
+            .collect(Collectors.toList());
     }
 } 

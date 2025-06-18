@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class StockHistoryResponse {
     private Long id;
+    private String medicineName;
     private LocalDate expDate;
     private Integer quantity;
     private Integer availableQuantity;

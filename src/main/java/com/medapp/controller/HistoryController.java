@@ -1,7 +1,7 @@
 package com.medapp.controller;
 
 import com.medapp.dto.DateRangeRequest;
-import com.medapp.entity.MedStock;
+import com.medapp.dto.StockHistoryResponse;
 import com.medapp.entity.Sell;
 import com.medapp.service.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class HistoryController {
     }
 
     @PostMapping("/purchases")
-    public ResponseEntity<List<MedStock>> getPurchaseHistory(@RequestBody DateRangeRequest request) {
+    public ResponseEntity<List<StockHistoryResponse>> getPurchaseHistory(@RequestBody DateRangeRequest request) {
         return ResponseEntity.ok(historyService.getPurchaseHistory(request.getFromDate(), request.getToDate()));
     }
 } 
