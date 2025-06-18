@@ -39,6 +39,7 @@ public class SellService {
         sell.setDate(LocalDateTime.now());
         sell.setCustomer(request.getCustomer() == null || request.getCustomer().trim().isEmpty() ? "ANONYMOUS" : request.getCustomer());
         sell.setModeOfPayment(request.getModeOfPayment());
+        sell.setUtrNumber(request.getUtrNumber());
         
         List<SellItem> items = new ArrayList<>();
         double totalAmount = 0.0;

@@ -29,6 +29,9 @@ public class Sell {
     @Column(name = "mode_of_payment")
     private String modeOfPayment;
 
+    @Column(name = "utr_number", length = 12)
+    private String utrNumber;
+
     @OneToMany(mappedBy = "sell", cascade = CascadeType.ALL)
     private List<SellItem> items;
 } 

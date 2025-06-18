@@ -8,6 +8,7 @@ public class CreateSellRequest {
     private String customer;
     private List<SellItemRequest> items;
     private String modeOfPayment;
+    private String utrNumber;
 
     @Data
     public static class SellItemRequest {
