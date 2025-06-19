@@ -34,12 +34,13 @@ public class SellService {
     private MedStockRepository medStockRepository;
 
     @Transactional
-    public Sell createSell(CreateSellRequest request) {
+    public Sell createSell(CreateSellRequest request, String createdBy) {
         Sell sell = new Sell();
         sell.setDate(LocalDateTime.now());
         sell.setCustomer(request.getCustomer() == null || request.getCustomer().trim().isEmpty() ? "ANONYMOUS" : request.getCustomer());
         sell.setModeOfPayment(request.getModeOfPayment());
         sell.setUtrNumber(request.getUtrNumber());
+        sell.setCreatedBy(createdBy);
         
         List<SellItem> items = new ArrayList<>();
         double totalAmount = 0.0;

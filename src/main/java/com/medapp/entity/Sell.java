@@ -32,6 +32,9 @@ public class Sell {
     @Column(name = "utr_number", length = 12)
     private String utrNumber;
 
+    @Column(name = "created_by", length = 100)
+    private String createdBy;
+
     @OneToMany(mappedBy = "sell", cascade = CascadeType.ALL)
     private List<SellItem> items;
 } 

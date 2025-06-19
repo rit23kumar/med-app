@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/sells")
@@ -16,8 +17,9 @@ public class SellController {
     private SellService sellService;
 
     @PostMapping
-    public ResponseEntity<Sell> createSell(@RequestBody CreateSellRequest request) {
-        return ResponseEntity.ok(sellService.createSell(request));
+    public ResponseEntity<Sell> createSell(@RequestBody CreateSellRequest request, Principal principal) {
+        String username = principal != null ? principal.getName() : "anonymous";
+        return ResponseEntity.ok(sellService.createSell(request, username));
     }
 
     @GetMapping
