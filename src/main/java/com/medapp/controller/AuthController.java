@@ -82,6 +82,7 @@ public class AuthController {
     }
 
     @PutMapping("/users/{id}/password")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public ResponseEntity<User> changeUserPassword(@PathVariable Long id, @RequestBody Map<String, String> passwordUpdate) {
         try {
             String newPassword = passwordUpdate.get("newPassword");
