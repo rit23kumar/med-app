@@ -83,6 +83,7 @@ public class SellService {
         }
 
         sell.setTotalAmount(totalAmount);
+        sell.setAmountPaid(request.getAmountPaid() != null ? request.getAmountPaid() : totalAmount);
         sell.setItems(items);
         sell = sellRepository.save(sell);
         return sell;

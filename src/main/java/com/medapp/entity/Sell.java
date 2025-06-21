@@ -23,6 +23,9 @@ public class Sell {
     @Column(name = "Total_Amount")
     private Double totalAmount;
     
+    @Column(name = "amount_paid")
+    private Double amountPaid;
+    
     @Column(nullable = true)
     private String customer;
 

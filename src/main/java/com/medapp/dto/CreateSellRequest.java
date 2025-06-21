@@ -9,6 +9,7 @@ public class CreateSellRequest {
     private List<SellItemRequest> items;
     private String modeOfPayment;
     private String utrNumber;
+    private Double amountPaid;
 
     @Data
     public static class SellItemRequest {
