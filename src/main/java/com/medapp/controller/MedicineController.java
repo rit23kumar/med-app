@@ -83,6 +83,12 @@ public class MedicineController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/stock/{id}")
+    public ResponseEntity<StockHistoryResponse> updateStockBatch(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        StockHistoryResponse updatedBatch = medStockService.updateStockBatch(id, updates);
+        return ResponseEntity.ok(updatedBatch);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);

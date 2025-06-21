@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class MedStockService {
@@ -76,10 +77,46 @@ public class MedStockService {
     }
 
     @Transactional
-    public void deleteStockBatch(Long id) {
-        if (!medStockRepository.existsById(id)) {
-            throw new EntityNotFoundException("Stock batch not found with id: " + id);
+    public void deleteStockBatch(Long batchId) {
+        MedStock stock = medStockRepository.findById(batchId)
+                .orElseThrow(() -> new EntityNotFoundException("Stock batch not found with id: " + batchId));
+        
+        if (stock.getQuantity() > stock.getAvailableQuantity()) {
+            throw new IllegalArgumentException("Cannot delete batch: Items have already been sold from this stock.");
         }
-        medStockRepository.deleteById(id);
+
+        medStockRepository.delete(stock);
+    }
+
+    @Transactional
+    public StockHistoryResponse updateStockBatch(Long batchId, Map<String, Object> updates) {
+        MedStock stock = medStockRepository.findById(batchId)
+                .orElseThrow(() -> new EntityNotFoundException("Stock batch not found with id: " + batchId));
+
+        updates.forEach((key, value) -> {
+            switch (key) {
+                case "quantity":
+                    stock.setQuantity((Integer) value);
+                    break;
+                case "availableQuantity":
+                    stock.setAvailableQuantity((Integer) value);
+                    break;
+                case "price":
+                    stock.setPrice(Double.valueOf(String.valueOf(value)));
+                    break;
+                default:
+                    // Ignore other fields
+                    break;
+            }
+        });
+
+        MedStock updatedStock = medStockRepository.save(stock);
+        return convertToResponse(updatedStock);
+    }
+
+    private StockHistoryResponse convertToResponse(MedStock medStock) {
+        StockHistoryResponse response = new StockHistoryResponse();
+        BeanUtils.copyProperties(medStock, response);
+        return response;
     }
 } 
