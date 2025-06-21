@@ -39,12 +39,13 @@ public class SecurityConfig {
             .cors().and()
             .csrf().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/api/auth/**", "/", "/login", "/error", "/*.html", "/*.js", "/*.css", "/static/**").permitAll()
+            .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers("/api/medicines/with-stock", "/api/medicines/batch", "/api/medicines/stock/**").hasRole("ADMIN")
             .requestMatchers("/api/history/purchases").hasRole("ADMIN")
             .requestMatchers("/api/medicines/**", "/api/sells/**", "/api/history/sales").hasAnyRole("ADMIN", "USER")
             .requestMatchers("/api/users/**").hasRole("ADMIN")
-            .anyRequest().authenticated()
+            .requestMatchers("/api/**").authenticated()
+            .anyRequest().permitAll()
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -76,7 +77,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://med-app.uk"));
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:3000", "https://localhost:3000",
+            "http://med-app.uk", "https://med-app.uk"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
