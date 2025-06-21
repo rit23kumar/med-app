@@ -95,6 +95,12 @@ public class MedicineController {
         return ResponseEntity.ok(expiringStock);
     }
 
+    @GetMapping("/stock/expired")
+    public ResponseEntity<List<StockHistoryResponse>> getExpiredStock() {
+        List<StockHistoryResponse> expiredStock = medStockService.getExpiredStock();
+        return ResponseEntity.ok(expiredStock);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);

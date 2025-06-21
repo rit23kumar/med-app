@@ -123,6 +123,17 @@ public class MedStockService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<StockHistoryResponse> getExpiredStock() {
+        LocalDate today = LocalDate.now();
+        
+        List<MedStock> expiredStock = medStockRepository.findExpiredStock(today);
+        
+        return expiredStock.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
     private StockHistoryResponse convertToResponse(MedStock medStock) {
         StockHistoryResponse response = new StockHistoryResponse();
         BeanUtils.copyProperties(medStock, response);
