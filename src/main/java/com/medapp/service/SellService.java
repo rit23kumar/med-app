@@ -76,6 +76,7 @@ public class SellService {
             item.setPrice(itemRequest.getPrice());
             item.setExpDate(LocalDate.parse(itemRequest.getExpDate()));
             item.setDiscount(itemRequest.getDiscount());
+            item.setBatchId(itemRequest.getBatchId());
             
             items.add(item);
             totalAmount += itemRequest.getPrice() * itemRequest.getQuantity();
@@ -93,5 +94,23 @@ public class SellService {
 
     public Sell getSellById(Long id) {
         return sellRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public void deleteSell(Long sellId) {
+        Sell sell = sellRepository.findById(sellId)
+            .orElseThrow(() -> new EntityNotFoundException("Sale not found with id: " + sellId));
+
+        for (SellItem item : sell.getItems()) {
+            if (item.getBatchId() != null) {
+                MedStock stockEntry = medStockRepository.findById(item.getBatchId())
+                    .orElseThrow(() -> new EntityNotFoundException("Stock batch not found with id: " + item.getBatchId()));
+                
+                stockEntry.setAvailableQuantity(stockEntry.getAvailableQuantity() + item.getQuantity());
+                medStockRepository.save(stockEntry);
+            }
+        }
+
+        sellRepository.delete(sell);
     }
 } 

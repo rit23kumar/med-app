@@ -35,4 +35,7 @@ public class SellItem {
     
     @Column(name = "discount")
     private Double discount;
+
+    @Column(name = "batch_id")
+    private Long batchId;
 } 
