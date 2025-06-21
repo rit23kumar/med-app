@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Map;
+import java.time.LocalDate;
 
 @Service
 public class MedStockService {
@@ -68,11 +69,7 @@ public class MedStockService {
 
         // Convert to DTOs
         return stockEntries.stream()
-            .map(stock -> {
-                StockHistoryResponse response = new StockHistoryResponse();
-                BeanUtils.copyProperties(stock, response);
-                return response;
-            })
+            .map(this::convertToResponse)
             .collect(Collectors.toList());
     }
 
@@ -114,9 +111,24 @@ public class MedStockService {
         return convertToResponse(updatedStock);
     }
 
+    @Transactional(readOnly = true)
+    public List<StockHistoryResponse> getExpiringStock(int withinDays) {
+        LocalDate today = LocalDate.now();
+        LocalDate expiryLimit = today.plusDays(withinDays);
+        
+        List<MedStock> expiringStock = medStockRepository.findExpiringStock(today, expiryLimit);
+        
+        return expiringStock.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
     private StockHistoryResponse convertToResponse(MedStock medStock) {
         StockHistoryResponse response = new StockHistoryResponse();
         BeanUtils.copyProperties(medStock, response);
+        if (medStock.getMedicine() != null) {
+            response.setMedicineName(medStock.getMedicine().getName());
+        }
         return response;
     }
 } 

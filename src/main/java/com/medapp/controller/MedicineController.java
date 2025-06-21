@@ -89,6 +89,12 @@ public class MedicineController {
         return ResponseEntity.ok(updatedBatch);
     }
 
+    @GetMapping("/stock/expiring")
+    public ResponseEntity<List<StockHistoryResponse>> getExpiringStock(@RequestParam(defaultValue = "90") int days) {
+        List<StockHistoryResponse> expiringStock = medStockService.getExpiringStock(days);
+        return ResponseEntity.ok(expiringStock);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);
