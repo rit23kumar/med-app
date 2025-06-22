@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class MedicineDto {
     private Long id;
     private String name;
+    private boolean enabled;
 } 

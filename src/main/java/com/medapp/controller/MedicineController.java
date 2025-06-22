@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/medicines")
@@ -99,6 +100,17 @@ public class MedicineController {
     public ResponseEntity<List<StockHistoryResponse>> getExpiredStock() {
         List<StockHistoryResponse> expiredStock = medStockService.getExpiredStock();
         return ResponseEntity.ok(expiredStock);
+    }
+
+    @PutMapping("/enabled/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MedicineDto> updateMedicineEnabled(@PathVariable Long id, @RequestBody Map<String, Boolean> body) {
+        Boolean enabled = body.get("enabled");
+        if (enabled == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        MedicineDto updated = medicineService.updateMedicineEnabled(id, enabled);
+        return ResponseEntity.ok(updated);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

@@ -131,6 +131,16 @@ public class MedicineService {
     }
 
     public List<Medicine> getAllMedicinesUnpaged() {
-        return medicineRepository.findAll(org.springframework.data.domain.Sort.by("name").ascending());
+        return medicineRepository.findByEnabledTrueOrderByNameAsc();
+    }
+
+    public MedicineDto updateMedicineEnabled(Long id, boolean enabled) {
+        Medicine medicine = medicineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Medicine not found with id: " + id));
+        medicine.setEnabled(enabled);
+        medicine = medicineRepository.save(medicine);
+        MedicineDto dto = new MedicineDto();
+        BeanUtils.copyProperties(medicine, dto);
+        return dto;
     }
 } 
