@@ -113,6 +113,12 @@ public class MedicineController {
         return ResponseEntity.ok(updated);
     }
 
+    @GetMapping("/stock/grand-total")
+    public ResponseEntity<Double> getGrandTotalStockValue() {
+        double total = medStockService.getGrandTotalStockValue();
+        return ResponseEntity.ok(total);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);

@@ -21,4 +21,6 @@ public interface MedStockRepository extends JpaRepository<MedStock, Long> {
     List<MedStock> findExpiringStock(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
     @Query("SELECT s FROM MedStock s WHERE s.expDate < :today AND s.availableQuantity > 0 ORDER BY s.expDate ASC")
     List<MedStock> findExpiredStock(@Param("today") LocalDate today);
+    @Query("SELECT SUM(s.availableQuantity * s.price) FROM MedStock s WHERE s.availableQuantity > 0")
+    Double getGrandTotalStockValue();
 } 

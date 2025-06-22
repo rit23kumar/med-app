@@ -134,6 +134,11 @@ public class MedStockService {
                 .collect(Collectors.toList());
     }
 
+    public double getGrandTotalStockValue() {
+        Double total = medStockRepository.getGrandTotalStockValue();
+        return total != null ? total : 0.0;
+    }
+
     private StockHistoryResponse convertToResponse(MedStock medStock) {
         StockHistoryResponse response = new StockHistoryResponse();
         BeanUtils.copyProperties(medStock, response);
