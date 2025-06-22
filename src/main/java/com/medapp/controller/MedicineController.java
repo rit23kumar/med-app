@@ -119,6 +119,11 @@ public class MedicineController {
         return ResponseEntity.ok(total);
     }
 
+    @GetMapping("/flat-export")
+    public ResponseEntity<List<com.medapp.dto.MedicineStockFlatExportDto>> getAllMedicineStockFlatExport() {
+        return ResponseEntity.ok(medStockService.getAllMedicineStockFlatExport());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(Map.of("message", ex.getMessage()), HttpStatus.BAD_REQUEST);

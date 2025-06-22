@@ -139,6 +139,10 @@ public class MedStockService {
         return total != null ? total : 0.0;
     }
 
+    public List<com.medapp.dto.MedicineStockFlatExportDto> getAllMedicineStockFlatExport() {
+        return medStockRepository.getAllMedicineStockFlatExport();
+    }
+
     private StockHistoryResponse convertToResponse(MedStock medStock) {
         StockHistoryResponse response = new StockHistoryResponse();
         BeanUtils.copyProperties(medStock, response);
