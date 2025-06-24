@@ -1,7 +1,6 @@
 package com.medapp.service;
 
 import com.medapp.dto.StockHistoryResponse;
-import com.medapp.entity.MedStock;
 import com.medapp.entity.Sell;
 import java.time.LocalDate;
 import java.util.List;

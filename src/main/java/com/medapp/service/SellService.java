@@ -79,7 +79,10 @@ public class SellService {
             item.setBatchId(itemRequest.getBatchId());
             
             items.add(item);
-            totalAmount += itemRequest.getPrice() * itemRequest.getQuantity();
+            double subtotal = itemRequest.getPrice() * itemRequest.getQuantity();
+            double discountPercent = itemRequest.getDiscount() != null ? itemRequest.getDiscount() : 0.0;
+            double discountAmount = subtotal * (discountPercent / 100.0);
+            totalAmount += subtotal - discountAmount;
         }
 
         sell.setTotalAmount(totalAmount);
