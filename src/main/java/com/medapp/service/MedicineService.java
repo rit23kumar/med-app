@@ -36,6 +36,7 @@ public class MedicineService {
         try {
             Medicine medicine = new Medicine();
             BeanUtils.copyProperties(medicineDto, medicine);
+            medicine.setEnabled(true);
             medicine = medicineRepository.save(medicine);
             BeanUtils.copyProperties(medicine, medicineDto);
             return medicineDto;
@@ -63,6 +64,7 @@ public class MedicineService {
 
                 Medicine medicine = new Medicine();
                 BeanUtils.copyProperties(medicineDto, medicine);
+                medicine.setEnabled(true);
                 medicine = medicineRepository.save(medicine);
                 
                 MedicineDto savedDto = new MedicineDto();

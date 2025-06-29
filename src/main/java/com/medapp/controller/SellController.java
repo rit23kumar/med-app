@@ -40,7 +40,6 @@ public class SellController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSell(@PathVariable Long id) {
         sellService.deleteSell(id);
         return ResponseEntity.noContent().build();

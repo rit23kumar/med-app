@@ -19,6 +19,6 @@ public class Medicine {
     @Column(unique = true)
     private String name;
 
-    @Column(nullable = false, columnDefinition = "BIT DEFAULT 1")
+    @Column(nullable = false, columnDefinition = "BIT DEFAULT 0")
     private boolean enabled;
 }

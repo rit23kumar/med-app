@@ -153,29 +153,6 @@ public class AuthService {
         }
     }
 
-    public void createAdminUser() {
-        if (!userRepository.existsByUsername("admin")) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setFullName("Administrator");
-            admin.setRole(UserRole.ADMIN);
-            admin.setEnabled(true);
-            userRepository.save(admin);
-        }
-
-        // Create a default app user if not exists
-        if (!userRepository.existsByUsername("appuser")) {
-            User appUser = new User();
-            appUser.setUsername("appuser");
-            appUser.setPassword(passwordEncoder.encode("appuser123")); // Choose a strong password
-            appUser.setFullName("App User");
-            appUser.setRole(UserRole.USER);
-            appUser.setEnabled(true);
-            userRepository.save(appUser);
-        }
-    }
-
     @Transactional
     public void deleteUser(Long id) {
         userRepository.deleteById(id);

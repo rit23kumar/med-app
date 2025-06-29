@@ -90,13 +90,13 @@ public class MedicineController {
         return ResponseEntity.ok(updatedBatch);
     }
 
-    @GetMapping("/stock/expiring")
+    @GetMapping("/expiring")
     public ResponseEntity<List<StockHistoryResponse>> getExpiringStock(@RequestParam(defaultValue = "90") int days) {
         List<StockHistoryResponse> expiringStock = medStockService.getExpiringStock(days);
         return ResponseEntity.ok(expiringStock);
     }
 
-    @GetMapping("/stock/expired")
+    @GetMapping("/expired")
     public ResponseEntity<List<StockHistoryResponse>> getExpiredStock() {
         List<StockHistoryResponse> expiredStock = medStockService.getExpiredStock();
         return ResponseEntity.ok(expiredStock);
