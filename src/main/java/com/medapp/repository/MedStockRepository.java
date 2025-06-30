@@ -28,6 +28,8 @@ public interface MedStockRepository extends JpaRepository<MedStock, Long> {
        "CASE WHEN s.expDate IS NOT NULL THEN CONCAT(s.expDate, '') ELSE '' END, " +
        "COALESCE(s.availableQuantity, 0), " +
        "COALESCE(s.price, 0.0)) " +
-       "FROM Medicine m LEFT JOIN MedStock s ON s.medicine = m ORDER BY m.name")
+       "FROM Medicine m LEFT JOIN MedStock s ON s.medicine = m " +
+       "WHERE s.availableQuantity > 0 OR s.availableQuantity IS NULL " +
+       "ORDER BY m.name")
     List<com.medapp.dto.MedicineStockFlatExportDto> getAllMedicineStockFlatExport();
 } 
