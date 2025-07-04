@@ -36,7 +36,15 @@ public class SellService {
     @Transactional
     public Sell createSell(CreateSellRequest request, String createdBy) {
         Sell sell = new Sell();
-        sell.setDate(LocalDateTime.now());
+        // Always set invoiceDate to now
+        LocalDateTime now = LocalDateTime.now();
+        sell.setInvoiceDate(now);
+        // Set accountingDate based on option
+        if ("tomorrow".equalsIgnoreCase(request.getAccountingDateOption())) {
+            sell.setAccountingDate(now.toLocalDate().plusDays(1).atStartOfDay().plusSeconds(1));
+        } else {
+            sell.setAccountingDate(now);
+        }
         sell.setCustomer(request.getCustomer() == null || request.getCustomer().trim().isEmpty() ? "ANONYMOUS" : request.getCustomer());
         sell.setModeOfPayment(request.getModeOfPayment());
         sell.setUtrNumber(request.getUtrNumber());

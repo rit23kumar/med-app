@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface SellRepository extends JpaRepository<Sell, Long> {
-    List<Sell> findByDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Sell> findByInvoiceDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Sell> findByAccountingDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 } 

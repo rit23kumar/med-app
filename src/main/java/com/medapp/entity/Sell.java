@@ -18,7 +18,11 @@ public class Sell {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    private LocalDateTime date;
+    @Column(name = "invoice_date")
+    private LocalDateTime invoiceDate;
+    
+    @Column(name = "accounting_date")
+    private LocalDateTime accountingDate;
     
     @Column(name = "Total_Amount")
     private Double totalAmount;

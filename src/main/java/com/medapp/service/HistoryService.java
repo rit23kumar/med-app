@@ -6,6 +6,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface HistoryService {
-    List<Sell> getSalesHistory(LocalDate fromDate, LocalDate toDate);
+    List<Sell> getSalesHistory(LocalDate fromDate, LocalDate toDate, String dateType);
     List<StockHistoryResponse> getPurchaseHistory(LocalDate fromDate, LocalDate toDate);
 } 

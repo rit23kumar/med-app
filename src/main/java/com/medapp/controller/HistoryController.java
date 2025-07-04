@@ -20,7 +20,7 @@ public class HistoryController {
 
     @PostMapping("/sales")
     public ResponseEntity<List<Sell>> getSalesHistory(@RequestBody DateRangeRequest request) {
-        return ResponseEntity.ok(historyService.getSalesHistory(request.getFromDate(), request.getToDate()));
+        return ResponseEntity.ok(historyService.getSalesHistory(request.getFromDate(), request.getToDate(), request.getDateType()));
     }
 
     @PostMapping("/purchases")

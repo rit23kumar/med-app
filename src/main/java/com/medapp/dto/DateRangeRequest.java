@@ -7,4 +7,5 @@ import java.time.LocalDate;
 public class DateRangeRequest {
     private LocalDate fromDate;
     private LocalDate toDate;
+    private String dateType; // 'accountingDate' or 'invoiceDate'
 } 

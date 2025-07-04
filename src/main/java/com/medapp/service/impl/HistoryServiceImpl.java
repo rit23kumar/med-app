@@ -24,10 +24,14 @@ public class HistoryServiceImpl implements HistoryService {
     private MedStockRepository medStockRepository;
 
     @Override
-    public List<Sell> getSalesHistory(LocalDate fromDate, LocalDate toDate) {
+    public List<Sell> getSalesHistory(LocalDate fromDate, LocalDate toDate, String dateType) {
         LocalDateTime startDateTime = fromDate.atStartOfDay();
         LocalDateTime endDateTime = toDate.plusDays(1).atStartOfDay();
-        return sellRepository.findByDateBetween(startDateTime, endDateTime);
+        if ("accountingDate".equalsIgnoreCase(dateType)) {
+            return sellRepository.findByAccountingDateBetween(startDateTime, endDateTime);
+        } else {
+            return sellRepository.findByInvoiceDateBetween(startDateTime, endDateTime);
+        }
     }
 
     @Override
