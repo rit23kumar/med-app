@@ -5,6 +5,7 @@ import com.medapp.dto.MedicineWithStockDto;
 import com.medapp.dto.BatchMedicineResponse;
 import com.medapp.entity.Medicine;
 import com.medapp.repository.MedicineRepository;
+import com.medapp.repository.SellItemRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,9 @@ public class MedicineService {
 
     @Autowired
     private MedStockService medStockService;
+
+    @Autowired
+    private SellItemRepository sellItemRepository;
 
     public MedicineDto addMedicine(MedicineDto medicineDto) {
         // Check if medicine with same name already exists
@@ -132,7 +136,10 @@ public class MedicineService {
         return medicineRepository.findByNameContainingIgnoreCase(name);
     }
 
-    public List<Medicine> getAllMedicinesUnpaged() {
+    public List<Medicine> getAllMedicinesUnpaged(Boolean includeDisabled) {
+        if (Boolean.TRUE.equals(includeDisabled)) {
+            return medicineRepository.findAllByOrderByNameAsc();
+        }
         return medicineRepository.findByEnabledTrueOrderByNameAsc();
     }
 
@@ -144,5 +151,12 @@ public class MedicineService {
         MedicineDto dto = new MedicineDto();
         BeanUtils.copyProperties(medicine, dto);
         return dto;
+    }
+
+    public void deleteMedicine(Long medicineId) {
+        if (sellItemRepository.existsByMedicineId(medicineId)) {
+            throw new IllegalStateException("Cannot delete: Medicine is used in Sell.");
+        }
+        medicineRepository.deleteById(medicineId);
     }
 } 

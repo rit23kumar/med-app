@@ -79,7 +79,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000", "https://localhost:3000",
-            "http://med-app.uk", "https://med-app.uk"
+                 "http://med-app.uk", "https://med-app.uk",
+                 "http://med-app.store", "https://med-app.store"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

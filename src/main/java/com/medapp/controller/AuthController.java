@@ -20,7 +20,8 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = {
     "http://localhost:3000", "https://localhost:3000", 
-    "http://med-app.uk", "https://med-app.uk"
+    "http://med-app.uk", "https://med-app.uk",
+    "http://med-app.store", "https://med-app.store"
 })
 public class AuthController {
 

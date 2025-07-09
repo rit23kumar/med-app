@@ -16,4 +16,6 @@ public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     boolean existsByNameIgnoreCase(String name);
 
     List<Medicine> findByEnabledTrueOrderByNameAsc();
+
+    List<Medicine> findAllByOrderByNameAsc();
 } 

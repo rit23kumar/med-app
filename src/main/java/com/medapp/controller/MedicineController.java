@@ -74,8 +74,8 @@ public class MedicineController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Medicine>> getAllMedicinesUnpaged() {
-        return ResponseEntity.ok(medicineService.getAllMedicinesUnpaged());
+    public ResponseEntity<List<Medicine>> getAllMedicinesUnpaged(@RequestParam(value = "includeDisabled", required = false) Boolean includeDisabled) {
+        return ResponseEntity.ok(medicineService.getAllMedicinesUnpaged(includeDisabled));
     }
 
     @DeleteMapping("/stock/{id}")
@@ -122,6 +122,16 @@ public class MedicineController {
     @GetMapping("/flat-export")
     public ResponseEntity<List<com.medapp.dto.MedicineStockFlatExportDto>> getAllMedicineStockFlatExport() {
         return ResponseEntity.ok(medStockService.getAllMedicineStockFlatExport());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteMedicine(@PathVariable Long id) {
+        try {
+            medicineService.deleteMedicine(id);
+            return ResponseEntity.ok().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
