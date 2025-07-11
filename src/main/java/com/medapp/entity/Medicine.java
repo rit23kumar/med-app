@@ -21,4 +21,8 @@ public class Medicine {
 
     @Column(nullable = false, columnDefinition = "BIT DEFAULT 0")
     private boolean enabled;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category", nullable = false, columnDefinition = "INT DEFAULT 1")
+    private MedCategory category;
 }

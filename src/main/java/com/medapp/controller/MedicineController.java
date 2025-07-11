@@ -7,6 +7,11 @@ import com.medapp.dto.StockHistoryResponse;
 import com.medapp.entity.Medicine;
 import com.medapp.service.MedicineService;
 import com.medapp.service.MedStockService;
+import com.medapp.repository.MedCategoryRepository;
+import com.medapp.entity.MedCategory;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,11 +25,18 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @RequestMapping("/api/medicines")
 public class MedicineController {
 
+    private final MedCategoryRepository medCategoryRepository;
+
     @Autowired
     private MedicineService medicineService;
 
     @Autowired
     private MedStockService medStockService;
+
+    public MedicineController(MedicineService medicineService, MedCategoryRepository medCategoryRepository) {
+        this.medicineService = medicineService;
+        this.medCategoryRepository = medCategoryRepository;
+    }
 
     @PostMapping
     public ResponseEntity<MedicineDto> addMedicine(@RequestBody MedicineDto medicineDto) {
@@ -78,6 +90,11 @@ public class MedicineController {
         return ResponseEntity.ok(medicineService.getAllMedicinesUnpaged(includeDisabled));
     }
 
+    @GetMapping("/categories")
+    public List<MedCategory> getAllCategories() {
+        return medCategoryRepository.findAll();
+    }
+
     @DeleteMapping("/stock/{id}")
     public ResponseEntity<Void> deleteStockBatch(@PathVariable Long id) {
         medStockService.deleteStockBatch(id);
@@ -110,6 +127,13 @@ public class MedicineController {
             return ResponseEntity.badRequest().build();
         }
         MedicineDto updated = medicineService.updateMedicineEnabled(id, enabled);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MedicineDto> updateMedicine(@PathVariable Long id, @RequestBody MedicineDto medicineDto) {
+        MedicineDto updated = medicineService.updateMedicine(id, medicineDto);
         return ResponseEntity.ok(updated);
     }
 

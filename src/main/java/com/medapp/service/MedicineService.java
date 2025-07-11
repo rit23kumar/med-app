@@ -6,6 +6,8 @@ import com.medapp.dto.BatchMedicineResponse;
 import com.medapp.entity.Medicine;
 import com.medapp.repository.MedicineRepository;
 import com.medapp.repository.SellItemRepository;
+import com.medapp.repository.MedCategoryRepository;
+import com.medapp.entity.MedCategory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,9 @@ public class MedicineService {
 
     @Autowired
     private SellItemRepository sellItemRepository;
+
+    @Autowired
+    private MedCategoryRepository medCategoryRepository;
 
     public MedicineDto addMedicine(MedicineDto medicineDto) {
         // Check if medicine with same name already exists
@@ -151,6 +156,24 @@ public class MedicineService {
         MedicineDto dto = new MedicineDto();
         BeanUtils.copyProperties(medicine, dto);
         return dto;
+    }
+
+    @Transactional
+    public MedicineDto updateMedicine(Long id, MedicineDto dto) {
+        Medicine medicine = medicineRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Medicine not found with id: " + id));
+        if (dto.getName() != null) medicine.setName(dto.getName());
+        medicine.setEnabled(dto.isEnabled());
+        if (dto.getCategoryId() != null) {
+            MedCategory category = medCategoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + dto.getCategoryId()));
+            medicine.setCategory(category);
+        }
+        medicine = medicineRepository.save(medicine);
+        MedicineDto result = new MedicineDto();
+        BeanUtils.copyProperties(medicine, result);
+        result.setCategoryId(medicine.getCategory() != null ? medicine.getCategory().getId() : null);
+        return result;
     }
 
     public void deleteMedicine(Long medicineId) {
