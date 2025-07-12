@@ -27,21 +27,12 @@ public class InitialDataLoader {
                     "Syrup",
                     "Suspension",
                     "Injection",
-                    "Cream",
                     "Ointment",
-                    "Gel",
                     "Powder",
                     "Drops",
                     "Inhaler",
                     "Spray",
-                    "Lotion",
-                    "Patch",
-                    "Suppository",
-                    "Granules",
-                    "Sachet",
-                    "Lozenge",
-                    "Mouthwash",
-                    "Shampoo"
+                    "Others"
                 };
                 for (String name : categories) {
                     MedCategory cat = new MedCategory();

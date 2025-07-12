@@ -20,6 +20,7 @@ import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
+import com.medapp.repository.MedStockRepository;
 
 @Service
 public class MedicineService {
@@ -29,6 +30,9 @@ public class MedicineService {
 
     @Autowired
     private MedStockService medStockService;
+
+    @Autowired
+    private MedStockRepository medStockRepository;
 
     @Autowired
     private SellItemRepository sellItemRepository;
@@ -143,9 +147,17 @@ public class MedicineService {
 
     public List<Medicine> getAllMedicinesUnpaged(Boolean includeDisabled) {
         if (Boolean.TRUE.equals(includeDisabled)) {
-            return medicineRepository.findAllByOrderByNameAsc();
+            List<Medicine> meds = medicineRepository.findAllByOrderByNameAsc();
+            meds.forEach(med -> med.setAvailable(
+                medStockRepository.sumAvailableQuantityByMedicineId(med.getId())
+            ));
+            return meds;
         }
-        return medicineRepository.findByEnabledTrueOrderByNameAsc();
+        List<Medicine> meds = medicineRepository.findByEnabledTrueOrderByNameAsc();
+        meds.forEach(med -> med.setAvailable(
+            medStockRepository.sumAvailableQuantityByMedicineId(med.getId())
+        ));
+        return meds;
     }
 
     public MedicineDto updateMedicineEnabled(Long id, boolean enabled) {

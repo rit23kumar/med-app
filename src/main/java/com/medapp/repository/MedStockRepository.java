@@ -23,6 +23,8 @@ public interface MedStockRepository extends JpaRepository<MedStock, Long> {
     List<MedStock> findExpiredStock(@Param("today") LocalDate today);
     @Query("SELECT SUM(s.availableQuantity * s.price) FROM MedStock s WHERE s.availableQuantity > 0")
     Double getGrandTotalStockValue();
+    @Query("SELECT COALESCE(SUM(s.availableQuantity), 0) FROM MedStock s WHERE s.medicine.id = :medicineId")
+    Integer sumAvailableQuantityByMedicineId(@Param("medicineId") Long medicineId);
     @Query("SELECT new com.medapp.dto.MedicineStockFlatExportDto(" +
        "m.name, m.enabled, " +
        "CASE WHEN s.expDate IS NOT NULL THEN CONCAT(s.expDate, '') ELSE '' END, " +

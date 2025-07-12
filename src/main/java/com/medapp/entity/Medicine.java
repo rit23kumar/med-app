@@ -25,4 +25,7 @@ public class Medicine {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category", nullable = false, columnDefinition = "INT DEFAULT 1")
     private MedCategory category;
+
+    @Transient
+    private Integer available;
 }
