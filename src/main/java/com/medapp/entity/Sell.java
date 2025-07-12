@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Sell")
@@ -24,11 +25,11 @@ public class Sell {
     @Column(name = "accounting_date")
     private LocalDateTime accountingDate;
     
-    @Column(name = "Total_Amount")
-    private Double totalAmount;
-    
-    @Column(name = "amount_paid")
-    private Double amountPaid;
+    @Column(name = "Total_Amount", precision = 15, scale = 2)
+    private BigDecimal totalAmount;
+
+    @Column(name = "amount_paid", precision = 15, scale = 2)
+    private BigDecimal amountPaid;
     
     @Column(nullable = true)
     private String customer;

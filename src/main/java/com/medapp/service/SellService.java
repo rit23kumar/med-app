@@ -20,6 +20,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class SellService {
@@ -51,7 +53,7 @@ public class SellService {
         sell.setCreatedBy(createdBy);
         
         List<SellItem> items = new ArrayList<>();
-        double totalAmount = 0.0;
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (SellItemRequest itemRequest : request.getItems()) {
             Medicine medicine = medicineRepository.findById(itemRequest.getMedicineId())
@@ -87,14 +89,20 @@ public class SellService {
             item.setBatchId(itemRequest.getBatchId());
             
             items.add(item);
-            double subtotal = itemRequest.getPrice() * itemRequest.getQuantity();
-            double discountPercent = itemRequest.getDiscount() != null ? itemRequest.getDiscount() : 0.0;
-            double discountAmount = subtotal * (discountPercent / 100.0);
-            totalAmount += subtotal - discountAmount;
+            BigDecimal price = BigDecimal.valueOf(itemRequest.getPrice());
+            BigDecimal quantity = BigDecimal.valueOf(itemRequest.getQuantity());
+            BigDecimal subtotal = price.multiply(quantity);
+            BigDecimal discountPercent = itemRequest.getDiscount() != null ? BigDecimal.valueOf(itemRequest.getDiscount()) : BigDecimal.ZERO;
+            BigDecimal discountAmount = subtotal.multiply(discountPercent).divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP);
+            BigDecimal lineTotal = subtotal.subtract(discountAmount);
+            totalAmount = totalAmount.add(lineTotal);
         }
 
+        // Round totalAmount to 2 decimal places
+        totalAmount = totalAmount.setScale(2, RoundingMode.HALF_UP);
         sell.setTotalAmount(totalAmount);
-        sell.setAmountPaid(request.getAmountPaid() != null ? request.getAmountPaid() : totalAmount);
+        BigDecimal amountPaid = request.getAmountPaid() != null ? BigDecimal.valueOf(request.getAmountPaid()) : totalAmount;
+        sell.setAmountPaid(amountPaid.setScale(2, RoundingMode.HALF_UP));
         sell.setItems(items);
         sell = sellRepository.save(sell);
         return sell;
